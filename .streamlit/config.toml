@@ -4,10 +4,13 @@ gatherUsageStats = false
 [client]
 toolbarMode = "minimal"
 showErrorDetails = false
+showSidebarNavigation = false
 
 [server]
 headless = true
 runOnSave = false
+enableCORS = false
+enableXsrfProtection = true
 
 [theme]
 primaryColor = "#4CAF50"
@@ -19,3 +22,6 @@ font = "sans serif"
 [ui]
 hideTopBar = true
 hideSidebarNav = true
+
+[runner]
+magicEnabled = false

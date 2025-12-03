@@ -92,6 +92,23 @@ st.markdown("""
     /* Hide user profile icon */
     [data-testid="stHeader"] {display: none;}
 
+    /* Hide bottom right buttons (profile and Streamlit logo) */
+    .styles_viewerBadge__1yB5_ {display: none !important;}
+    [data-testid="collapsedControl"] {display: none !important;}
+    .stActionButton {display: none !important;}
+    button[kind="header"] {display: none !important;}
+    [class*="viewerBadge"] {display: none !important;}
+
+    /* Hide all elements in bottom-right corner */
+    .stApp > header {display: none !important;}
+    .stApp [data-testid="stHeader"] {display: none !important;}
+    iframe[title*="streamlit"] {display: none !important;}
+
+    /* Additional hiding for persistent elements */
+    div[data-testid="stToolbar"] {display: none !important;}
+    .css-1dp5vir {display: none !important;}
+    .css-164nlkn {display: none !important;}
+
     /* App styling */
     .main {
         padding: 2rem;
