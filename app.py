@@ -69,6 +69,30 @@ if not check_password():
 # Custom CSS for better styling
 st.markdown("""
     <style>
+    /* Hide Streamlit branding and UI elements */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display: none;}
+    .stDecoration {display: none;}
+
+    /* Hide GitHub icon, Fork button, and menu */
+    button[title="View app source on GitHub"] {display: none;}
+    a[href*="github.com"] {display: none;}
+    [data-testid="stToolbar"] {display: none;}
+    [data-testid="stDecoration"] {display: none;}
+    [data-testid="stStatusWidget"] {display: none;}
+
+    /* Hide footer with Streamlit logo */
+    footer {display: none !important;}
+    .viewerBadge_container__1QSob {display: none !important;}
+    .viewerBadge_link__1S137 {display: none !important;}
+    .viewerBadge_text__1JaDK {display: none !important;}
+
+    /* Hide user profile icon */
+    [data-testid="stHeader"] {display: none;}
+
+    /* App styling */
     .main {
         padding: 2rem;
     }
