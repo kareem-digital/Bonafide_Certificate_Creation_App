@@ -340,16 +340,27 @@ def generate_certificate(row, reg_no, word_template):
             if not needs_replacement:
                 return
 
-            # Try to replace within existing runs first (preserves formatting automatically)
+            # Try to replace ALL placeholders within existing runs first
             for run in para.runs:
-                run_text = run.text
                 for key, value in replacements.items():
-                    if key in run_text:
-                        run.text = run_text.replace(key, value)
-                        # Successfully replaced in single run - formatting preserved
-                        return
+                    if key in run.text:
+                        run.text = run.text.replace(key, value)
+                        # Continue to replace other placeholders - don't return!
 
-            # Complex case: placeholder spans multiple runs
+            # Check if all replacements are done
+            full_text_after = para.text
+
+            # If still has unreplaced placeholders, handle complex case (split across runs)
+            still_has_placeholders = False
+            for key in replacements.keys():
+                if key in full_text_after:
+                    still_has_placeholders = True
+                    break
+
+            if not still_has_placeholders:
+                return  # All done!
+
+            # Complex case: some placeholders span multiple runs
             # Preserve formatting from first run
             if not para.runs:
                 return
@@ -369,8 +380,8 @@ def generate_certificate(row, reg_no, word_template):
             except:
                 formatting['font_color'] = None
 
-            # Replace in full text
-            new_text = full_text
+            # Replace remaining placeholders in full text
+            new_text = full_text_after
             for key, value in replacements.items():
                 new_text = new_text.replace(key, value)
 
