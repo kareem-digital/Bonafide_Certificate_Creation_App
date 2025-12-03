@@ -326,45 +326,49 @@ def generate_certificate(row, reg_no, word_template):
             "{{PRONOUN_POSSESSIVE}}": pronoun_possessive
         }
 
-        # Replace in paragraphs (preserving formatting)
-        for para in doc.paragraphs:
+        def replace_in_paragraph(para):
+            """Replace placeholders in paragraph, handling split runs"""
             for key, value in replacements.items():
                 if key in para.text:
-                    # Replace in runs to preserve formatting
-                    for run in para.runs:
-                        if key in run.text:
-                            run.text = run.text.replace(key, value)
+                    # Merge all run texts
+                    full_text = para.text
 
-        # Replace in tables (preserving formatting)
+                    # Replace all placeholders
+                    new_text = full_text
+                    for k, v in replacements.items():
+                        new_text = new_text.replace(k, v)
+
+                    # If text changed, update the paragraph
+                    if new_text != full_text:
+                        # Clear existing runs and add new text
+                        for run in para.runs:
+                            run.text = ""
+                        if para.runs:
+                            para.runs[0].text = new_text
+                        else:
+                            para.add_run(new_text)
+                    break
+
+        # Replace in all paragraphs
+        for para in doc.paragraphs:
+            replace_in_paragraph(para)
+
+        # Replace in tables
         for table in doc.tables:
             for row in table.rows:
                 for cell in row.cells:
                     for para in cell.paragraphs:
-                        for key, value in replacements.items():
-                            if key in para.text:
-                                for run in para.runs:
-                                    if key in run.text:
-                                        run.text = run.text.replace(key, value)
+                        replace_in_paragraph(para)
 
-        # Replace in headers (to preserve school header)
+        # Replace in headers and footers
         for section in doc.sections:
             # Replace in header
-            header = section.header
-            for para in header.paragraphs:
-                for key, value in replacements.items():
-                    if key in para.text:
-                        for run in para.runs:
-                            if key in run.text:
-                                run.text = run.text.replace(key, value)
+            for para in section.header.paragraphs:
+                replace_in_paragraph(para)
 
             # Replace in footer
-            footer = section.footer
-            for para in footer.paragraphs:
-                for key, value in replacements.items():
-                    if key in para.text:
-                        for run in para.runs:
-                            if key in run.text:
-                                run.text = run.text.replace(key, value)
+            for para in section.footer.paragraphs:
+                replace_in_paragraph(para)
 
         # Save to BytesIO object
         doc_io = io.BytesIO()
