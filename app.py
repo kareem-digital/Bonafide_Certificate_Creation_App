@@ -327,27 +327,81 @@ def generate_certificate(row, reg_no, word_template):
         }
 
         def replace_in_paragraph(para):
-            """Replace placeholders in paragraph, handling split runs"""
-            for key, value in replacements.items():
-                if key in para.text:
-                    # Merge all run texts
-                    full_text = para.text
+            """Replace placeholders while preserving run formatting (bold, colors, etc.)"""
+            full_text = para.text
 
-                    # Replace all placeholders
-                    new_text = full_text
-                    for k, v in replacements.items():
-                        new_text = new_text.replace(k, v)
-
-                    # If text changed, update the paragraph
-                    if new_text != full_text:
-                        # Clear existing runs and add new text
-                        for run in para.runs:
-                            run.text = ""
-                        if para.runs:
-                            para.runs[0].text = new_text
-                        else:
-                            para.add_run(new_text)
+            # Check if any replacement needed
+            needs_replacement = False
+            for key in replacements.keys():
+                if key in full_text:
+                    needs_replacement = True
                     break
+
+            if not needs_replacement:
+                return
+
+            # Try to replace within existing runs first (preserves formatting automatically)
+            for run in para.runs:
+                run_text = run.text
+                for key, value in replacements.items():
+                    if key in run_text:
+                        run.text = run_text.replace(key, value)
+                        # Successfully replaced in single run - formatting preserved
+                        return
+
+            # Complex case: placeholder spans multiple runs
+            # Preserve formatting from first run
+            if not para.runs:
+                return
+
+            first_run = para.runs[0]
+            formatting = {
+                'bold': first_run.bold,
+                'italic': first_run.italic,
+                'underline': first_run.underline,
+                'font_name': first_run.font.name,
+                'font_size': first_run.font.size,
+            }
+
+            # Get font color if available
+            try:
+                formatting['font_color'] = first_run.font.color.rgb
+            except:
+                formatting['font_color'] = None
+
+            # Replace in full text
+            new_text = full_text
+            for key, value in replacements.items():
+                new_text = new_text.replace(key, value)
+
+            # Clear all runs
+            for run in para.runs:
+                run.text = ""
+
+            # Set new text in first run with preserved formatting
+            para.runs[0].text = new_text
+            para.runs[0].bold = formatting['bold']
+            para.runs[0].italic = formatting['italic']
+            para.runs[0].underline = formatting['underline']
+
+            # Preserve font properties
+            if formatting['font_name']:
+                try:
+                    para.runs[0].font.name = formatting['font_name']
+                except:
+                    pass
+
+            if formatting['font_size']:
+                try:
+                    para.runs[0].font.size = formatting['font_size']
+                except:
+                    pass
+
+            if formatting['font_color']:
+                try:
+                    para.runs[0].font.color.rgb = formatting['font_color']
+                except:
+                    pass
 
         # Replace in all paragraphs
         for para in doc.paragraphs:
