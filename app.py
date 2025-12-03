@@ -405,7 +405,7 @@ if search_button:
                         st.download_button(
                             label="📥 Download Certificate",
                             data=doc_io,
-                            file_name=f"certificate_{reg_input}_{name.replace(' ', '_')}.docx",
+                            file_name=f"TO WHOM IT MAY CONCERN - {reg_input}.docx",
                             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                             use_container_width=True
                         )
