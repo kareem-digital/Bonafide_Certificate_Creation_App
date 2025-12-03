@@ -109,6 +109,35 @@ st.markdown("""
     .css-1dp5vir {display: none !important;}
     .css-164nlkn {display: none !important;}
 
+    /* Hide profile image and container (from DOM inspection) */
+    img[alt="App Creator Avatar"] {display: none !important;}
+    img[class*="profileImage"] {display: none !important;}
+    img[class*="appCreatorAvatar"] {display: none !important;}
+    div[class*="profileContainer"] {display: none !important;}
+    div[class*="profilePreview"] {display: none !important;}
+    div[class*="_profileContainer_"] {display: none !important;}
+    div[class*="_profileImage_"] {display: none !important;}
+    a[href*="user/kareem"] {display: none !important;}
+    a[href*="/user/"] {display: none !important;}
+
+    /* Hide Streamlit status/embed elements */
+    script[src*="streamlitstatus.com"] {display: none !important;}
+    iframe[class*="statusFrame"] {display: none !important;}
+
+    /* Hide all elements with profile/avatar in class name */
+    [class*="profile"] {display: none !important;}
+    [class*="avatar"] {display: none !important;}
+    [class*="Avatar"] {display: none !important;}
+    [class*="Profile"] {display: none !important;}
+
+    /* Hide iframe and container in bottom-right */
+    .main > div > div > div > iframe {display: none !important;}
+    div[class*="gzau"] {display: none !important;}
+
+    /* Nuclear option: hide everything in specific bottom-right area */
+    .stApp > div:last-child {display: none !important;}
+    body > div > div > div > div:last-child {display: none !important;}
+
     /* App styling */
     .main {
         padding: 2rem;
