@@ -327,92 +327,117 @@ def generate_certificate(row, reg_no, word_template):
         }
 
         def replace_in_paragraph(para):
-            """Replace placeholders while preserving run formatting (bold, colors, etc.)"""
+            """Replace placeholders while preserving character-level formatting (bold, colors, etc.)"""
             full_text = para.text
 
             # Check if any replacement needed
-            needs_replacement = False
-            for key in replacements.keys():
-                if key in full_text:
-                    needs_replacement = True
-                    break
-
-            if not needs_replacement:
+            if not any(key in full_text for key in replacements.keys()):
                 return
 
-            # Try to replace ALL placeholders within existing runs first
+            # Build character-by-character formatting map
+            char_formatting = []
             for run in para.runs:
-                for key, value in replacements.items():
-                    if key in run.text:
-                        run.text = run.text.replace(key, value)
-                        # Continue to replace other placeholders - don't return!
+                formatting = {
+                    'bold': run.bold,
+                    'italic': run.italic,
+                    'underline': run.underline,
+                    'font_name': run.font.name,
+                    'font_size': run.font.size,
+                }
+                try:
+                    formatting['font_color'] = run.font.color.rgb
+                except:
+                    formatting['font_color'] = None
 
-            # Check if all replacements are done
-            full_text_after = para.text
+                # Each character in this run has this formatting
+                for _ in range(len(run.text)):
+                    char_formatting.append(formatting.copy())
 
-            # If still has unreplaced placeholders, handle complex case (split across runs)
-            still_has_placeholders = False
-            for key in replacements.keys():
-                if key in full_text_after:
-                    still_has_placeholders = True
-                    break
+            # Replace placeholders and update formatting map
+            new_text = full_text
+            offset = 0  # Track position changes due to replacements
 
-            if not still_has_placeholders:
-                return  # All done!
-
-            # Complex case: some placeholders span multiple runs
-            # Preserve formatting from first run
-            if not para.runs:
-                return
-
-            first_run = para.runs[0]
-            formatting = {
-                'bold': first_run.bold,
-                'italic': first_run.italic,
-                'underline': first_run.underline,
-                'font_name': first_run.font.name,
-                'font_size': first_run.font.size,
-            }
-
-            # Get font color if available
-            try:
-                formatting['font_color'] = first_run.font.color.rgb
-            except:
-                formatting['font_color'] = None
-
-            # Replace remaining placeholders in full text
-            new_text = full_text_after
             for key, value in replacements.items():
-                new_text = new_text.replace(key, value)
+                search_pos = 0
+                while True:
+                    pos = new_text.find(key, search_pos)
+                    if pos == -1:
+                        break
+
+                    # Get formatting of the first character of the placeholder
+                    if pos < len(char_formatting):
+                        placeholder_format = char_formatting[pos].copy()
+                    else:
+                        placeholder_format = char_formatting[0].copy() if char_formatting else {}
+
+                    # Replace text
+                    new_text = new_text[:pos] + value + new_text[pos + len(key):]
+
+                    # Update formatting map: remove placeholder chars, add value chars with same format
+                    del char_formatting[pos:pos + len(key)]
+                    for _ in range(len(value)):
+                        char_formatting.insert(pos, placeholder_format.copy())
+
+                    search_pos = pos + len(value)
 
             # Clear all runs
             for run in para.runs:
                 run.text = ""
 
-            # Set new text in first run with preserved formatting
-            para.runs[0].text = new_text
-            para.runs[0].bold = formatting['bold']
-            para.runs[0].italic = formatting['italic']
-            para.runs[0].underline = formatting['underline']
+            # Rebuild runs based on formatting boundaries
+            if not char_formatting:
+                if para.runs:
+                    para.runs[0].text = new_text
+                else:
+                    para.add_run(new_text)
+                return
 
-            # Preserve font properties
-            if formatting['font_name']:
-                try:
-                    para.runs[0].font.name = formatting['font_name']
-                except:
-                    pass
+            # Group consecutive characters with same formatting into runs
+            run_index = 0
+            i = 0
+            while i < len(new_text):
+                current_format = char_formatting[i] if i < len(char_formatting) else char_formatting[-1]
+                run_text = ""
 
-            if formatting['font_size']:
-                try:
-                    para.runs[0].font.size = formatting['font_size']
-                except:
-                    pass
+                # Collect consecutive characters with same formatting
+                while i < len(new_text):
+                    char_format = char_formatting[i] if i < len(char_formatting) else char_formatting[-1]
+                    if char_format == current_format:
+                        run_text += new_text[i]
+                        i += 1
+                    else:
+                        break
 
-            if formatting['font_color']:
-                try:
-                    para.runs[0].font.color.rgb = formatting['font_color']
-                except:
-                    pass
+                # Create or reuse run
+                if run_index < len(para.runs):
+                    run = para.runs[run_index]
+                else:
+                    run = para.add_run()
+
+                run.text = run_text
+                run.bold = current_format.get('bold')
+                run.italic = current_format.get('italic')
+                run.underline = current_format.get('underline')
+
+                if current_format.get('font_name'):
+                    try:
+                        run.font.name = current_format['font_name']
+                    except:
+                        pass
+
+                if current_format.get('font_size'):
+                    try:
+                        run.font.size = current_format['font_size']
+                    except:
+                        pass
+
+                if current_format.get('font_color'):
+                    try:
+                        run.font.color.rgb = current_format['font_color']
+                    except:
+                        pass
+
+                run_index += 1
 
         # Replace in all paragraphs
         for para in doc.paragraphs:
