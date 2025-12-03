@@ -66,77 +66,92 @@ def check_password():
 if not check_password():
     st.stop()
 
-# Custom CSS for better styling
+# Custom CSS for white-label commercial app (remove ALL branding)
 st.markdown("""
     <style>
-    /* Hide Streamlit branding and UI elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display: none;}
-    .stDecoration {display: none;}
+    /* === COMPLETE BRANDING REMOVAL === */
 
-    /* Hide GitHub icon, Fork button, and menu */
-    button[title="View app source on GitHub"] {display: none;}
-    a[href*="github.com"] {display: none;}
-    [data-testid="stToolbar"] {display: none;}
-    [data-testid="stDecoration"] {display: none;}
-    [data-testid="stStatusWidget"] {display: none;}
+    /* Hide ALL Streamlit UI elements */
+    #MainMenu {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
+    header {visibility: hidden !important;}
+    .stDeployButton {display: none !important;}
+    .stDecoration {display: none !important;}
 
-    /* Hide footer with Streamlit logo */
+    /* Hide GitHub/Fork/Deploy buttons */
+    button[title="View app source on GitHub"] {display: none !important;}
+    button[data-testid="baseButton-header"] {display: none !important;}
+    a[href*="github.com"] {display: none !important;}
+    [data-testid="stToolbar"] {display: none !important;}
+    [data-testid="stDecoration"] {display: none !important;}
+    [data-testid="stStatusWidget"] {display: none !important;}
+
+    /* Hide footer with Streamlit branding */
     footer {display: none !important;}
+    footer > div {display: none !important;}
     .viewerBadge_container__1QSob {display: none !important;}
     .viewerBadge_link__1S137 {display: none !important;}
     .viewerBadge_text__1JaDK {display: none !important;}
+    div[class*="viewerBadge"] {display: none !important;}
 
-    /* Hide user profile icon */
-    [data-testid="stHeader"] {display: none;}
-
-    /* Hide bottom right buttons (profile and Streamlit logo) */
-    .styles_viewerBadge__1yB5_ {display: none !important;}
-    [data-testid="collapsedControl"] {display: none !important;}
-    .stActionButton {display: none !important;}
-    button[kind="header"] {display: none !important;}
-    [class*="viewerBadge"] {display: none !important;}
-
-    /* Hide all elements in bottom-right corner */
+    /* Hide header and all header buttons */
+    [data-testid="stHeader"] {display: none !important;}
     .stApp > header {display: none !important;}
-    .stApp [data-testid="stHeader"] {display: none !important;}
-    iframe[title*="streamlit"] {display: none !important;}
+    header[data-testid="stHeader"] {display: none !important;}
 
-    /* Additional hiding for persistent elements */
-    div[data-testid="stToolbar"] {display: none !important;}
-    .css-1dp5vir {display: none !important;}
-    .css-164nlkn {display: none !important;}
-
-    /* Hide profile image and container (from DOM inspection) */
+    /* Hide profile/avatar elements */
     img[alt="App Creator Avatar"] {display: none !important;}
     img[class*="profileImage"] {display: none !important;}
     img[class*="appCreatorAvatar"] {display: none !important;}
+    img[src*="avatar"] {display: none !important;}
     div[class*="profileContainer"] {display: none !important;}
     div[class*="profilePreview"] {display: none !important;}
     div[class*="_profileContainer_"] {display: none !important;}
     div[class*="_profileImage_"] {display: none !important;}
-    a[href*="user/kareem"] {display: none !important;}
+    a[href*="user/"] {display: none !important;}
     a[href*="/user/"] {display: none !important;}
+    a[target="_blank"][rel*="noopener"] {display: none !important;}
 
-    /* Hide Streamlit status/embed elements */
-    script[src*="streamlitstatus.com"] {display: none !important;}
-    iframe[class*="statusFrame"] {display: none !important;}
-
-    /* Hide all elements with profile/avatar in class name */
+    /* Hide ALL elements with branding-related keywords */
     [class*="profile"] {display: none !important;}
     [class*="avatar"] {display: none !important;}
     [class*="Avatar"] {display: none !important;}
     [class*="Profile"] {display: none !important;}
+    [class*="viewerBadge"] {display: none !important;}
+    [class*="ViewerBadge"] {display: none !important;}
 
-    /* Hide iframe and container in bottom-right */
+    /* Hide Streamlit status/analytics */
+    script[src*="streamlitstatus.com"] {display: none !important;}
+    script[src*="segment"] {display: none !important;}
+    iframe[class*="statusFrame"] {display: none !important;}
+    iframe[src*="streamlit"] {display: none !important;}
+
+    /* Hide bottom-right corner elements */
+    .styles_viewerBadge__1yB5_ {display: none !important;}
+    [data-testid="collapsedControl"] {display: none !important;}
+    .stActionButton {display: none !important;}
+    button[kind="header"] {display: none !important;}
+    button[kind="headerNoPadding"] {display: none !important;}
+
+    /* Hide iframes and external links */
     .main > div > div > div > iframe {display: none !important;}
+    iframe[title*="Streamlit"] {display: none !important;}
 
-    /* Hide specific bottom-right corner elements only */
+    /* Hide dynamic class elements (gzau, etc.) */
     div[class*="gzau"] > div {display: none !important;}
     div[class*="gzau"] > a {display: none !important;}
     div[class*="gzau"] > img {display: none !important;}
+    a[class*="gzau"] {display: none !important;}
+
+    /* Hide "Made with Streamlit" and similar */
+    a[title*="Streamlit"] {display: none !important;}
+    a[aria-label*="Streamlit"] {display: none !important;}
+    div[aria-label*="Streamlit"] {display: none !important;}
+
+    /* Remove top padding where header was */
+    .block-container {
+        padding-top: 1rem !important;
+    }
 
     /* App styling */
     .main {
@@ -399,8 +414,7 @@ if search_button:
 st.markdown("---")
 st.markdown("""
     <div style='text-align: center; color: #666; padding: 1rem;'>
-        <small>Bonafide Certificate Generator v2.0<br>
-        🔒 Secure • Files stored in session only<br>
-        Made with ❤️ using Streamlit</small>
+        <small>Certificate Generator v2.0<br>
+        🔒 Secure • Private • Professional</small>
     </div>
 """, unsafe_allow_html=True)
