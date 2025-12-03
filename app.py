@@ -167,7 +167,6 @@ st.markdown("""
 
 # Title and description
 st.title("📜 Bonafide Certificate Generator")
-st.markdown("### M.A.M. I CUM MILLAT PUBLIC SCHOOL")
 st.markdown("---")
 
 # Initialize session state for files
