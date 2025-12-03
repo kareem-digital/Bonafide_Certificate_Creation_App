@@ -314,36 +314,57 @@ def generate_certificate(row, reg_no, word_template):
         # Load Word template from uploaded file
         doc = Document(word_template)
 
-        # Replace placeholders in paragraphs
-        for para in doc.paragraphs:
-            text = para.text
-            text = text.replace("{{REGNO}}", str(reg_no))
-            text = text.replace("{{NAME}}", name)
-            text = text.replace("{{RELATION}}", relation)
-            text = text.replace("{{FATHER}}", father)
-            text = text.replace("{{CLASS}}", str(class_))
-            text = text.replace("{{SESSION}}", session)
-            text = text.replace("{{DOB}}", str(dob))
-            text = text.replace("{{PRONOUN_SUBJECT}}", pronoun_subject)
-            text = text.replace("{{PRONOUN_POSSESSIVE}}", pronoun_possessive)
-            para.text = text
+        # Create replacement dictionary
+        replacements = {
+            "{{NAME}}": name,
+            "{{RELATION}}": relation,
+            "{{FATHER}}": father,
+            "{{CLASS}}": str(class_),
+            "{{SESSION}}": session,
+            "{{DOB}}": str(dob),
+            "{{PRONOUN_SUBJECT}}": pronoun_subject,
+            "{{PRONOUN_POSSESSIVE}}": pronoun_possessive
+        }
 
-        # Replace placeholders in tables (if any)
+        # Replace in paragraphs (preserving formatting)
+        for para in doc.paragraphs:
+            for key, value in replacements.items():
+                if key in para.text:
+                    # Replace in runs to preserve formatting
+                    for run in para.runs:
+                        if key in run.text:
+                            run.text = run.text.replace(key, value)
+
+        # Replace in tables (preserving formatting)
         for table in doc.tables:
             for row in table.rows:
                 for cell in row.cells:
                     for para in cell.paragraphs:
-                        text = para.text
-                        text = text.replace("{{REGNO}}", str(reg_no))
-                        text = text.replace("{{NAME}}", name)
-                        text = text.replace("{{RELATION}}", relation)
-                        text = text.replace("{{FATHER}}", father)
-                        text = text.replace("{{CLASS}}", str(class_))
-                        text = text.replace("{{SESSION}}", session)
-                        text = text.replace("{{DOB}}", str(dob))
-                        text = text.replace("{{PRONOUN_SUBJECT}}", pronoun_subject)
-                        text = text.replace("{{PRONOUN_POSSESSIVE}}", pronoun_possessive)
-                        para.text = text
+                        for key, value in replacements.items():
+                            if key in para.text:
+                                for run in para.runs:
+                                    if key in run.text:
+                                        run.text = run.text.replace(key, value)
+
+        # Replace in headers (to preserve school header)
+        for section in doc.sections:
+            # Replace in header
+            header = section.header
+            for para in header.paragraphs:
+                for key, value in replacements.items():
+                    if key in para.text:
+                        for run in para.runs:
+                            if key in run.text:
+                                run.text = run.text.replace(key, value)
+
+            # Replace in footer
+            footer = section.footer
+            for para in footer.paragraphs:
+                for key, value in replacements.items():
+                    if key in para.text:
+                        for run in para.runs:
+                            if key in run.text:
+                                run.text = run.text.replace(key, value)
 
         # Save to BytesIO object
         doc_io = io.BytesIO()
