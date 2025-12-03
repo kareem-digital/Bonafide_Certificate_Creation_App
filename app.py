@@ -132,11 +132,11 @@ st.markdown("""
 
     /* Hide iframe and container in bottom-right */
     .main > div > div > div > iframe {display: none !important;}
-    div[class*="gzau"] {display: none !important;}
 
-    /* Nuclear option: hide everything in specific bottom-right area */
-    .stApp > div:last-child {display: none !important;}
-    body > div > div > div > div:last-child {display: none !important;}
+    /* Hide specific bottom-right corner elements only */
+    div[class*="gzau"] > div {display: none !important;}
+    div[class*="gzau"] > a {display: none !important;}
+    div[class*="gzau"] > img {display: none !important;}
 
     /* App styling */
     .main {
