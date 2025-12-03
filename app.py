@@ -3,6 +3,7 @@ import pandas as pd
 from docx import Document
 import io
 from datetime import datetime
+import hashlib
 
 # Page configuration
 st.set_page_config(
@@ -10,6 +11,60 @@ st.set_page_config(
     page_icon="📜",
     layout="centered"
 )
+
+# Password authentication
+def check_password():
+    """Returns True if the user has entered the correct password."""
+
+    # Get password from Streamlit secrets, or use default for local testing
+    try:
+        correct_password = st.secrets.get("password", "school2024")
+    except:
+        correct_password = "school2024"  # Default password for local testing
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hashlib.sha256(st.session_state["password"].encode()).hexdigest() == hashlib.sha256(correct_password.encode()).hexdigest():
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store password
+        else:
+            st.session_state["password_correct"] = False
+
+    # First run or password not yet entered
+    if "password_correct" not in st.session_state:
+        st.markdown("### 🔐 Authentication Required")
+        st.markdown("Please enter the password to access the certificate generator.")
+        st.text_input(
+            "Password",
+            type="password",
+            on_change=password_entered,
+            key="password",
+            help="Contact school administration for the password"
+        )
+        st.info("💡 Default password for testing: `school2024`")
+        return False
+
+    # Password incorrect
+    elif not st.session_state["password_correct"]:
+        st.markdown("### 🔐 Authentication Required")
+        st.markdown("Please enter the password to access the certificate generator.")
+        st.text_input(
+            "Password",
+            type="password",
+            on_change=password_entered,
+            key="password",
+            help="Contact school administration for the password"
+        )
+        st.error("❌ Incorrect password. Please try again.")
+        return False
+
+    # Password correct
+    else:
+        return True
+
+# Check authentication before showing the app
+if not check_password():
+    st.stop()
 
 # Custom CSS for better styling
 st.markdown("""
