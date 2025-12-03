@@ -31,6 +31,6 @@ certificate_*.docx
 *.tmp
 ~$*.docx
 
-# Sensitive data files - Protected by password authentication
-# student records.xlsx
-# bonafide_certificate.docx
+# Sensitive data files - DO NOT COMMIT (upload directly to Streamlit Cloud)
+student records.xlsx
+bonafide_certificate.docx
