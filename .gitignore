@@ -30,3 +30,7 @@ certificate_*.docx
 # Temporary files
 *.tmp
 ~$*.docx
+
+# Sensitive data files - DO NOT COMMIT
+student records.xlsx
+bonafide_certificate.docx
